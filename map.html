@@ -25,10 +25,10 @@ require([
   
   });
   var view = new SceneView({
-    container: "viewDiv",    
-    map: map,                 
-    scale: 100000,         
-    center: [-83.92, 36]  
+    container: "viewDiv",     // Reference to the scene div created in step 5
+    map: map,                 // Reference to the map object created before the scene
+    scale: 100000,          // Sets the initial scale to 1:50,000,000
+    center: [-83.92, 36]  // Sets the center point of view with lon/lat
   });
 });
 </script>
