@@ -4445,7 +4445,7 @@ sub, sup {
 }
 
 #particles-js {
-  background: #66310b;
+  background: #04327c;
   display: flex;
   vertical-align: bottom;
   width: 100%;
@@ -4708,7 +4708,7 @@ sub, sup {
 }
 
 .footer {
-  background: #66310b;
+  background: #04327c;
   padding: 10px 0;
   margin-top: 100px;
   text-align: center;
