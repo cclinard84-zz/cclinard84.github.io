@@ -13,10 +13,10 @@ document.addEventListener("DOMContentLoaded", function() {
         value: "#ffffff"
       },
       shape: {
-        type: "polygon",
+        type: "circle",
         stroke: {
-          width: 0,
-          color: "#000000"
+          width: 3,
+          color: "#ffffff"
         },
         polygon: {
           nb_sides: 5
@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function() {
       },
       move: {
         enable: !0,
-        speed: 4,
+        speed: 5,
         direction: "none",
         random: !0,
         straight: !1,
