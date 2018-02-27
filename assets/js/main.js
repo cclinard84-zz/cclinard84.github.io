@@ -113,6 +113,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
       }
     },
-    retina_detect: !0
+    retina_detect: !1
   })
 }, !1);
