@@ -81,6 +81,10 @@ document.addEventListener("DOMContentLoaded", function() {
           enable: !0,
           mode: "push"
         },
+        touchstart: {
+          enable: !0,
+          mode: "push"
+        },
         resize: !0
       },
       modes: {
