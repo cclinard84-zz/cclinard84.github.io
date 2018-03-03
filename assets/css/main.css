@@ -4701,8 +4701,8 @@ sub, sup {
 }
 
 .project-link:active, .project-link:hover {
-  background-color: #54516a;
-  border-color: #54516a;
+  background-color: #04327c;
+  border-color: #04327c;
   color: #fff;
   transition: color .3s ease-in, background-color .3s ease-in, border-color .3s ease-in
 }
