@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="gameScript.js"></script>
+  <script>
+    function disableButtons() {
+      $('#increaseMarketingLevel').prop('disabled', true);
+      $('#buyAutoClipper').prop('disabled', true);
+      calculatePublicDemand();
+      setAutoClipperInititalPrice();
+    };
+
+    //Calculates the public demand for the selling of clips
+    function calculatePublicDemand() {
+      var marketingLevel = parseInt($('.marketingLevel').text());
+      var price = parseFloat($('.pricePerChipClip').text());
+      var marketing = (Math.pow(1.1, (marketingLevel)));
+      var demand = ((.8) * marketing / (price * 3));
+      demand = ((demand + (((demand / 100)))) * 100).toFixed(2);
+      $('.publicDemand').text(demand);
+    };
+  </script>
+
+  <title>Matt's Chip Clip Game</title>
+  <style>
+    hr {
+      display: block;
+      height: 1px;
+      border: 0;
+      border-top: 1px solid #ccc;
+      margin: 1em 0;
+      padding: 0;
+    }
+
+    #consoleDiv {
+      float: left;
+      background: black;
+      width: 100%;
+      color: white;
+    }
+
+    .pulsate {
+      animation: pulsate 1s linear infinite;
+    }
+
+    @keyframes pulsate {
+      50% {
+        opacity: 0;
+      }
+    }
+  </style>
+  <script>
+  </script>
+</head>
+
+<body onload="disableButtons()">
+  <table>
+    <tr>
+      <div id="consoleDiv">
+        <p class="consoleOld">
+          <span>&nbsp;.&nbsp;</span><span id="readout5"></span><br>
+          <span>&nbsp;.&nbsp;</span><span id="readout4"></span><br>
+          <span>&nbsp;.&nbsp;</span><span id="readout3"></span><br>
+          <span>&nbsp;.&nbsp;</span><span id="readout2"></span><br>
+        </p>
+        <p class="console">
+          <span>&nbsp;&gt;&nbsp;</span><span id="readout1">Welcome to Matt's ChipClips</span><span id="cursor" class="pulsate">|</span>
+        </p>
+      </div>
+    </tr>
+    <tr>
+      <td style="width:50%">
+        <h2>Chip Clips Made: <span class="chipClipCounter">0</span></h2>
+        <p />
+        <hr />
+        <button class="button" id="makeChipClip">Make Chip Clip</button>
+        <p />
+        <b>Resources</b>
+        <hr />Wire: <span class="wireRemaining">1000</span><br />
+
+        <p />Plastic: <span class="plasticRemaining">2000</span>
+        <p />
+
+        <p />Wire Price: $<span class="wirePrice">5</span><br />
+        <button class="button" id="buyWire">Buy Wire</button>
+        <p />Plastic Price: $<span class="plasticPrice">10</span><br />
+        <button class="button" id="buyPlastic">Buy Plastic</button>
+
+        <p />
+        <b>Money Management</b>
+        <hr />Available Funds: $<span class="availableFunds">0.00</span>
+        <p />
+        <span class="revenuePerSecond"></span><span class="revenuePerSecondTicker"></span>
+        <p /> Price Per Chip Clip: $<span class="pricePerChipClip">0.50</span><br />
+        <button class="button" id="lowerPricePerClip">Lower Price</button><button class="button" id="raisePricePerClip">Raise Price</button>
+        <p />
+        <span class="Unsold Inventory">Unsold Inventory: </span><span class="unsoldClips">0</span>
+        <p /> Public Demand: <span class="publicDemand"></span>%
+        <p /> Marketing Level: <span class="marketingLevel">1</span><br /> Cost: $ <span class="increaseMarketingCost">100.00</span>
+        <button class="button" id="increaseMarketingLevel" onclick="increaseMarketingLevel()">Marketing</button>
+        <p />
+
+        <b>Assets</b>
+        <hr />
+        <span class="autoClippers">
+          <button class="button" id='buyAutoClipper' onclick="buyAutoClippers()">Buy Auto Clippers</button><br />
+         Auto clipper price: $<span class="autoClipperPrice"></span><br /> Auto clipper level: <span class="autoClipperLevel">0</span><br /> Auto clippers make chip clips automatically.
+        </span>
+      </td>
+      <td id="fireworks">
+        <canvas id="fireworksCanvas"></canvas>
+      </td>
+    </tr>
+
+
+    <script>
+      var totalClipsSold = 0;
+
+      //Handles buttons disabled or enabled if there is enough money
+      setInterval(function() {
+        var funds = parseFloat($('.availableFunds').text());
+        var marketingCost = parseFloat($('.increaseMarketingCost').text());
+        var autoClipperPrice = parseFloat($('.autoClipperPrice').text());
+        if (funds >= marketingCost) {
+          $('#increaseMarketingLevel').prop('disabled', false);
+        } else {
+          $('#increaseMarketingLevel').prop('disabled', true);
+        }
+        if (funds >= autoClipperPrice) {
+          $('#buyAutoClipper').prop('disabled', false);
+        } else {
+          $('#buyAutoClipper').prop('disabled', true);
+        }
+      }, 250);
+
+      function increaseMarketingLevel(){
+        if($('#increaseMarketingLevel').prop('disabled')){
+          return;
+        }
+        var marketingLevel = parseInt($('.marketingLevel').text());
+        var marketingLevelCost = parseInt($('.increaseMarketingCost').text());
+        var funds = parseFloat($('.availableFunds').text());
+        var newMCost = marketingLevelCost + 100;
+        $('.marketingLevel').text(marketingLevel + 1);
+        $('.increaseMarketingCost').text(newMCost);
+        $('.availableFunds').text(funds - marketingLevelCost);
+      };
+
+      //This function handles the lowers the price per chip clip
+      $("#lowerPricePerClip").click(function() {
+        var price = parseFloat($('.pricePerChipClip').text())
+        if (price == .01) {
+          $("#lowerPricePerClip").prop('disabled', true);
+          return;
+        }
+        $('.pricePerChipClip').text((price - .01).toFixed(2));
+        calculatePublicDemand();
+      });
+
+      //This function handles the raising the price per chip clip
+      $("#raisePricePerClip").click(function() {
+        var price = parseFloat($('.pricePerChipClip').text())
+        if ($("#lowerPricePerClip").prop('disabled') == true) {
+          $("#lowerPricePerClip").prop('disabled', false);
+        }
+        $('.pricePerChipClip').text((price + .01).toFixed(2));
+        calculatePublicDemand();
+      });
+
+      //This function handles the logic for the make chip clip button
+      $("#makeChipClip").click(function() {
+        var clipCount = parseInt($('.chipClipCounter').text());
+        var wire = parseInt($('.wireRemaining').text());
+        var plastic = parseInt($('.plasticRemaining').text());
+        var unsoldClips = parseInt($('.unsoldClips').text());
+        if (wire != 0 && plastic != 0) {
+          $('.chipClipCounter').text(clipCount + 1);
+          $('.wireRemaining').text(wire - 1);
+          $('.plasticRemaining').text(plastic - 2);
+          $('.unsoldClips').text(unsoldClips + 1);
+        }
+        if(clipCount >= 100){
+            $('#makeChipClip').prop('disabled', true);
+          loadJS();
+        }
+      });
+
+      //This function handles the buying of a revenue ticker which is not implemented
+      //****NOT IMPLEMENTED ****//
+      $("#buyRevenueTicker").click(function() {
+        $('.revenuePerSecond').text('Revenue Per Second: $');
+        $('.revenuePerSecondTicker').text('0.00');
+      });
+
+      //This function handles the logic for buying wire.
+      $("#buyWire").click(function() {
+        var funds = parseFloat($('.availableFunds').text());
+        var wire = parseInt($('.wireRemaining').text());
+        var wirePrice = parseInt($('.wirePrice').text());
+        if (funds >= wirePrice) {
+          $('.availableFunds').text(funds - wirePrice);
+          $('.wireRemaining').text(wire + 1000);
+        }
+      });
+
+      //This function handles the logic for buying plastic.
+      $("#buyPlastic").click(function() {
+        var funds = parseFloat($('.availableFunds').text());
+        var plastic = parseFloat($('.plasticRemaining').text());
+        var plasticPrice = parseInt($('.plasticPrice').text());
+        if (funds >= plasticPrice) {
+          $('.availableFunds').text(funds - plasticPrice);
+          $('.plasticRemaining').text(plastic + 1000);
+        }
+      });
+
+      //This function calculates how many clips are sold based on demand * .25
+      function sellClips(number) {
+        var unsoldClips = parseInt($('.unsoldClips').text());
+        var funds = parseFloat($('.availableFunds').text());
+        var transaction = Math.ceil(getDemand() * .25);
+        var price = parseFloat($('.pricePerChipClip').text());
+        var sellPrice = transaction * price;
+        var clipCount = parseInt($('.chipClipCounter').text());
+        if(clipCount  >= 100 && $('#makeChipClip').prop('disabled') == false){
+          $('#makeChipClip').prop('disabled', true);
+          loadJS();
+        }
+        if (unsoldClips > 0 && transaction <= unsoldClips) {
+          funds += sellPrice;
+          unsoldClips = unsoldClips - transaction;
+          totalClipsSold = totalClipsSold + transaction;
+          $('.availableFunds').text((funds).toFixed(2));
+          $('.unsoldClips').text(unsoldClips)
+        }
+      };
+
+      //This function gets the demand of chip clips from the population
+      function getDemand() {
+        var marketingLevel = parseInt($('.marketingLevel').text());
+        var price = parseFloat($('.pricePerChipClip').text());
+        var marketing = (Math.pow(1.1, (marketingLevel)));
+        var demand = ((.8) * marketing / (price * 3));
+        demand = (demand + (((demand / 100)))).toFixed(2);
+        return demand;
+      }
+
+      //This function is responsible for calling sellClips each second
+      setInterval(function() {
+        var unsoldClips = parseInt($('.unsoldClips').text());
+        if (unsoldClips != 0)
+          sellClips(Math.floor(.7 * Math.pow(getDemand(), 1.15)));
+      }, 1000);
+
+      //This function loads the fireworks script to signal a win.
+      function loadJS() {
+          var js = document.createElement("script");
+          js.type = "application/javascript";
+          js.src = "fireworks.js";
+          document.getElementById("fireworks").appendChild(js);
+      };
+    </script>
+</body>
+
+</html>
